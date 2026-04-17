@@ -35,10 +35,19 @@ app.use(verifyRouter)
 app.use('/api', accountsRouter)
 app.use('/api', settingsRouter)
 
-app.use(express.static(path.join(__dirname, '../public/dist')))
+const webDistDir = path.join(__dirname, '../public/dist')
+const webIndexFile = path.join(webDistDir, 'index.html')
+
+app.use(express.static(webDistDir))
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/dist/index.html'), (err) => {
+  if (!fs.existsSync(webIndexFile)) {
+    const message = '管理页面未构建，请先运行 `pnpm run prepare:web`（或进入 public 目录执行 `pnpm install && pnpm build`）'
+    logger.error(message, 'SERVER')
+    return res.status(503).send(message)
+  }
+
+  res.sendFile(webIndexFile, (err) => {
     if (err) {
       logger.error('管理页面加载失败', 'SERVER', '', err)
       res.status(500).send('服务器内部错误')
