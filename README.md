@@ -87,7 +87,7 @@ QWEN_CLI_PROXY_URL=           # 自定义 CLI API 反代URL (默认: https://por
 PROXY_URL=                    # HTTP/HTTPS/SOCKS5 代理地址 (例如: http://127.0.0.1:7890)
 
 # 🗄️ 数据存储
-DATA_SAVE_MODE=none           # 数据保存模式 (none/file/redis)
+DATA_SAVE_MODE=file           # 数据保存模式 (none/file/redis)
 REDIS_URL=                    # Redis 连接地址 (可选，使用TLS时为rediss://)
 BATCH_LOGIN_CONCURRENCY=5     # 批量添加账号时的登录并发数
 
@@ -110,7 +110,7 @@ CACHE_MODE=default            # 图片缓存模式 (default/file)
 | `QWEN_CHAT_PROXY_URL` | 自定义 Chat API 反代地址 | `https://your-proxy.com` |
 | `QWEN_CLI_PROXY_URL` | 自定义 CLI API 反代地址 | `https://your-cli-proxy.com` |
 | `PROXY_URL` | 出站请求代理地址，支持 HTTP/HTTPS/SOCKS5 | `http://127.0.0.1:7890` |
-| `DATA_SAVE_MODE` | 数据持久化方式 | `none`/`file`/`redis` |
+| `DATA_SAVE_MODE` | 数据持久化方式 | `file`/`none`/`redis` |
 | `REDIS_URL` | Redis 数据库连接地址，使用TLS加密时需使用 `rediss://` 协议 | `redis://localhost:6379` 或 `rediss://xxx.upstash.io` |
 | `BATCH_LOGIN_CONCURRENCY` | 批量添加账号时的登录并发数，可在前端系统设置中动态调整 | `5` |
 | `CACHE_MODE` | 图片缓存存储方式 | `default`/`file` |
@@ -189,7 +189,7 @@ caches/
 docker run -d \
   -p 3000:3000 \
   -e API_KEY=sk-admin123,sk-user456,sk-user789 \
-  -e DATA_SAVE_MODE=none \
+  -e DATA_SAVE_MODE=file \
   -e CACHE_MODE=file \
   -e ACCOUNTS= \
   -v ./caches:/app/caches \

@@ -46,7 +46,7 @@ services:
       - REDIS_URL=
       # 数据保存模式
       # Data save mode (none / file / redis)
-      - DATA_SAVE_MODE=none
+      - DATA_SAVE_MODE=file
       # 账号(如果使用redis和file模式，则不需要填写)
       # Accounts (not needed for redis/file mode)
       - ACCOUNTS=

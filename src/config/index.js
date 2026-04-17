@@ -21,7 +21,7 @@ const parseApiKeys = () => {
 const { apiKeys, adminKey } = parseApiKeys()
 
 const config = {
-    dataSaveMode: process.env.DATA_SAVE_MODE || "none",
+    dataSaveMode: process.env.DATA_SAVE_MODE || "file",
     apiKeys: apiKeys,
     adminKey: adminKey,
     batchLoginConcurrency: Math.max(1, parseInt(process.env.BATCH_LOGIN_CONCURRENCY) || 5),
