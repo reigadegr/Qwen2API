@@ -1,20 +1,22 @@
 <template>
-  <div class="dashboard-scroll w-100vw h-100vh p-4 overflow-y-auto">
-    <div class="container mx-auto">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 px-4 space-y-4 md:space-y-0 pt-5">
-        <h1 class="text-4xl font-bold">{{ t('dash.title') }} <span class="text-gray-500 text-sm">by 兜豆子</span></h1>
-        <div class="grid grid-cols-2 sm:flex sm:flex-row w-full md:w-auto gap-2 sm:gap-0 sm:space-x-2 lg:space-x-4">
+  <div class="dashboard-scroll min-h-screen overflow-y-auto px-4 py-6 md:px-6">
+    <div class="mx-auto max-w-7xl">
+      <div class="dashboard-hero mb-6 flex flex-col justify-between gap-5 px-5 py-5 md:flex-row md:items-center">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">Operations Console</div>
+          <h1 class="mt-2 text-4xl font-bold text-slate-800">{{ t('dash.title') }} <span class="ml-2 text-sm font-medium text-slate-400">by 兜豆子</span></h1>
+          <p class="mt-2 text-sm text-slate-500">账号维护、批量刷新和导出操作集中在同一工作台，减少误操作和无效视觉干扰。</p>
+        </div>
+        <div class="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:flex-row sm:flex-wrap">
           <button @click="showAddModal = true"
-                  class="action-button font-bold border border-green-200 bg-green-50 text-green-900 px-4 py-2 rounded-xl shadow-sm hover:bg-green-100 hover:border-green-400 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 text-center">
+                  class="toolbar-btn toolbar-btn--primary">
             {{ t('dash.addAccount') }}
           </button>
           <button @click="refreshAllAccounts"
                   :disabled="isRefreshingAll"
                   :class="[
-                    'action-button font-bold px-4 py-2 rounded-xl shadow-sm transition-all duration-300 transform active:translate-y-0',
-                    isRefreshingAll
-                      ? 'bg-purple-400 text-white border-purple-400 refreshing-button-purple cursor-not-allowed transform-none'
-                      : 'macaron-purple-button text-purple-800 hover:-translate-y-1'
+                    'toolbar-btn toolbar-btn--accent',
+                    isRefreshingAll ? 'toolbar-btn--busy cursor-not-allowed' : ''
                   ]">
             <span v-if="isRefreshingAll" class="flex items-center space-x-2">
               <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -28,10 +30,8 @@
           <button @click="forceRefreshAllAccounts"
                   :disabled="isForceRefreshingAll"
                   :class="[
-                    'action-button font-bold px-4 py-2 rounded-xl shadow-sm transition-all duration-300 transform active:translate-y-0',
-                    isForceRefreshingAll
-                      ? 'bg-pink-400 text-white border-pink-400 refreshing-button-pink cursor-not-allowed transform-none'
-                      : 'macaron-pink-button text-pink-800 hover:-translate-y-1'
+                    'toolbar-btn toolbar-btn--warning',
+                    isForceRefreshingAll ? 'toolbar-btn--busy cursor-not-allowed' : ''
                   ]">
             <span v-if="isForceRefreshingAll" class="flex items-center space-x-2">
               <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -43,21 +43,21 @@
             <span v-else>{{ t('dash.forceRefresh') }}</span>
           </button>
           <button @click="exportAccounts"
-                  class="action-button font-bold border border-yellow-200 bg-yellow-50 text-yellow-900 px-4 py-2 rounded-xl shadow-sm hover:bg-yellow-100 hover:border-yellow-400 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 text-center">
+                  class="toolbar-btn toolbar-btn--neutral">
             {{ t('dash.export') }}
           </button>
           <router-link to="/settings"
-                       class="action-button col-span-2 sm:col-span-1 font-bold border border-blue-200 bg-blue-50 text-blue-900 px-4 py-2 rounded-xl shadow-sm hover:bg-blue-100 hover:border-blue-400 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 text-center">
+                       class="toolbar-btn toolbar-btn--ghost col-span-2 sm:col-span-1">
             {{ t('dash.settings') }}
           </router-link>
         </div>
       </div>
 
       <!-- 分页控制区 -->
-      <div class="flex justify-between items-center px-4 mb-4">
+      <div class="info-strip mb-4 flex flex-col justify-between gap-3 px-4 py-4 md:flex-row md:items-center">
         <div class="flex items-center space-x-2">
-          <span class="text-gray-700">{{ t('dash.perPage') }}</span>
-          <select v-model="pageSize" @change="changePageSize" class="rounded-lg border-gray-300 bg-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300">
+          <span class="text-slate-600">{{ t('dash.perPage') }}</span>
+          <select v-model="pageSize" @change="changePageSize" class="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500 transition-all duration-300">
             <option :value="10">10</option>
             <option :value="20">20</option>
             <option :value="50">50</option>
@@ -66,24 +66,24 @@
           </select>
         </div>
         <div class="flex space-x-2 items-center">
-          <span class="text-gray-700">{{ t('dash.totalItems', { n: totalItems }) }}</span>
+          <span class="text-slate-600">{{ t('dash.totalItems', { n: totalItems }) }}</span>
           <button
             @click="changePage(currentPage - 1)"
             :disabled="currentPage === 1"
             :class="[
-              'px-3 py-1 rounded-lg transition-all duration-300',
-              currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              'rounded-xl px-3 py-2 transition-all duration-300',
+              currentPage === 1 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'
             ]"
           >
             {{ t('dash.prevPage') }}
           </button>
-          <span class="text-gray-700">{{ currentPage }}/{{ totalPages }}</span>
+          <span class="text-slate-600">{{ currentPage }}/{{ totalPages }}</span>
           <button
             @click="changePage(currentPage + 1)"
             :disabled="currentPage === totalPages || totalPages === 0"
             :class="[
-              'px-3 py-1 rounded-lg transition-all duration-300',
-              currentPage === totalPages || totalPages === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              'rounded-xl px-3 py-2 transition-all duration-300',
+              currentPage === totalPages || totalPages === 0 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'
             ]"
           >
             {{ t('dash.nextPage') }}
@@ -92,7 +92,7 @@
       </div>
 
       <!-- 多选操作区 -->
-      <div class="flex justify-between items-center px-4 mb-4">
+      <div class="info-strip mb-4 flex flex-col justify-between gap-3 px-4 py-4 md:flex-row md:items-center">
         <div class="flex items-center space-x-3">
           <label class="inline-flex items-center cursor-pointer group">
             <div class="relative">
@@ -100,20 +100,20 @@
                     v-model="selectAll"
                     @change="toggleSelectAll"
                     class="sr-only peer">
-              <div class="w-6 h-6 bg-white border-2 border-gray-300 rounded-lg peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all duration-300 flex items-center justify-center">
+              <div class="w-6 h-6 rounded-lg border-2 border-slate-300 bg-white transition-all duration-300 flex items-center justify-center peer-checked:border-sky-600 peer-checked:bg-sky-600">
                 <svg v-show="selectAll" class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
             </div>
-            <span class="ml-2 text-gray-700 group-hover:text-indigo-700 transition-colors duration-200">{{ t('dash.selectAll') }}</span>
+            <span class="ml-2 text-slate-600 group-hover:text-sky-700 transition-colors duration-200">{{ t('dash.selectAll') }}</span>
           </label>
           <button
             @click="deleteSelected"
             :disabled="selectedTokens.length === 0"
             :class="[
-              'px-4 py-1.5 rounded-lg transition-all duration-300 border flex items-center space-x-1',
-              selectedTokens.length === 0 ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+              'flex items-center space-x-1 rounded-xl border px-4 py-2 transition-all duration-300',
+              selectedTokens.length === 0 ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400' : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
             ]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -124,7 +124,7 @@
         </div>
         <button
           @click="showDeleteAllConfirm = true"
-          class="px-4 py-1.5 rounded-lg border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 transition-all duration-300 flex items-center space-x-1"
+          class="flex items-center space-x-1 rounded-xl border border-rose-300 bg-rose-50 px-4 py-2 text-rose-700 transition-all duration-300 hover:bg-rose-100"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -138,62 +138,60 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
           <div v-for="token in displayedTokens"
                :key="token.email"
-               class="token-card group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-2xl pt-4"
-               :class="{'ring-2 ring-indigo-500 ring-opacity-75': isSelected(token.email)}">
+               class="token-card group relative overflow-hidden rounded-[24px] pt-4 transition-all duration-300"
+               :class="{'ring-2 ring-sky-500 ring-opacity-75': isSelected(token.email)}">
             <div class="absolute top-3 left-3 z-10">
               <label class="custom-checkbox cursor-pointer">
                 <input type="checkbox"
                        :checked="isSelected(token.email)"
                        @change="toggleSelect(token.email)"
                        class="sr-only peer">
-                <div class="checkbox-icon w-6 h-6 bg-white/70 backdrop-blur-sm border-2 border-gray-300 rounded-lg peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow">
+                <div class="checkbox-icon flex h-6 w-6 items-center justify-center rounded-lg border-2 border-slate-300 bg-white shadow-sm transition-all duration-300 hover:shadow peer-checked:border-sky-600 peer-checked:bg-sky-600">
                   <svg v-show="isSelected(token.email)" class="w-4 h-4 text-white transform scale-0 peer-checked:scale-100 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
               </label>
             </div>
-            <div class="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30"></div>
+            <div class="absolute inset-0 border border-white/70 bg-white/88"></div>
             <div class="relative p-6 flex flex-col gap-4">
               <div class="flex flex-col space-y-3">
-                <div class="relative flex items-center bg-blue-50/80 rounded-lg px-2 py-1">
+                <div class="field-row relative flex items-center rounded-xl px-3 py-2">
                   <div class="overflow-x-auto scrollbar-hide flex-1 flex items-center space-x-2">
-                    <span class="text-gray-700 min-w-[96px] text-left font-semibold">📧 Email:</span>
-                    <span class="font-medium whitespace-nowrap text-left">{{ token.email }}</span>
+                    <span class="field-label">Email</span>
+                    <span class="field-value whitespace-nowrap text-left">{{ token.email }}</span>
                   </div>
-                  <button @click="copyToClipboard(token.email)" class="absolute right-2 opacity-0 hover:opacity-100 transition-opacity bg-blue-200 hover:bg-blue-300 rounded px-2 py-1 text-base">📋</button>
+                  <button @click="copyToClipboard(token.email)" class="copy-button absolute right-2 rounded-lg px-2 py-1 text-xs font-medium">复制</button>
                 </div>
-                <div class="relative flex items-center bg-blue-50/80 rounded-lg px-2 py-1">
+                <div class="field-row relative flex items-center rounded-xl px-3 py-2">
                   <div class="overflow-x-auto scrollbar-hide flex-1 flex items-center space-x-2">
-                    <span class="text-gray-700 min-w-[96px] text-left font-semibold">🔑 Passwd:</span>
-                    <span class="font-medium whitespace-nowrap text-left">{{ token.password }}</span>
+                    <span class="field-label">Password</span>
+                    <span class="field-value whitespace-nowrap text-left">{{ token.password }}</span>
                   </div>
-                  <button @click="copyToClipboard(token.password)" class="absolute right-2 opacity-0 hover:opacity-100 transition-opacity bg-blue-200 hover:bg-blue-300 rounded px-2 py-1 text-base">📋</button>
+                  <button @click="copyToClipboard(token.password)" class="copy-button absolute right-2 rounded-lg px-2 py-1 text-xs font-medium">复制</button>
                 </div>
-                <div class="relative flex items-center bg-blue-50/80 rounded-lg px-2 py-1">
+                <div class="field-row relative flex items-center rounded-xl px-3 py-2">
                   <div class="overflow-x-auto scrollbar-hide flex-1 flex items-center space-x-2">
-                    <span class="text-gray-700 min-w-[96px] text-left font-semibold">🔐 Token:</span>
-                    <span class="font-medium whitespace-nowrap text-left text-sm">{{ token.token }}</span>
+                    <span class="field-label">Token</span>
+                    <span class="field-value whitespace-nowrap text-left text-sm">{{ token.token }}</span>
                   </div>
-                  <button @click="copyToClipboard(token.token)" class="absolute right-2 opacity-0 hover:opacity-100 transition-opacity bg-blue-200 hover:bg-blue-300 rounded px-2 py-1 text-base">📋</button>
+                  <button @click="copyToClipboard(token.token)" class="copy-button absolute right-2 rounded-lg px-2 py-1 text-xs font-medium">复制</button>
                 </div>
-                <div class="relative flex items-center bg-blue-50/80 rounded-lg px-2 py-1">
+                <div class="field-row relative flex items-center rounded-xl px-3 py-2">
                   <div class="overflow-x-auto scrollbar-hide flex-1 flex items-center space-x-2">
-                    <span class="text-gray-700 min-w-[96px] text-left font-semibold">⏰ Expire:</span>
-                    <span class="font-medium whitespace-nowrap text-left">{{ new Date(token.expires * 1000).toLocaleString() }}</span>
+                    <span class="field-label">Expire</span>
+                    <span class="field-value whitespace-nowrap text-left">{{ new Date(token.expires * 1000).toLocaleString() }}</span>
                   </div>
-                  <button @click="copyToClipboard(new Date(token.expires * 1000).toLocaleString())" class="absolute right-2 opacity-0 hover:opacity-100 transition-opacity bg-blue-200 hover:bg-blue-300 rounded px-2 py-1 text-base">📋</button>
+                  <button @click="copyToClipboard(new Date(token.expires * 1000).toLocaleString())" class="copy-button absolute right-2 rounded-lg px-2 py-1 text-xs font-medium">复制</button>
                 </div>
               </div>
 
-              <div class="pt-4 mt-auto border-t border-gray-200/50 space-y-2">
+              <div class="mt-auto space-y-2 border-t border-slate-200/80 pt-4">
                 <button @click="refreshToken(token.email)"
                         :disabled="refreshingTokens.includes(token.email)"
                         :class="[
-                          'w-full py-2 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2',
-                          refreshingTokens.includes(token.email)
-                            ? 'bg-green-400 text-white refreshing-button-green cursor-not-allowed'
-                            : 'macaron-green-button text-green-600 hover:bg-green-100 border border-green-200'
+                          'token-action token-action--primary',
+                          refreshingTokens.includes(token.email) ? 'toolbar-btn--busy cursor-not-allowed' : ''
                         ]">
                   <span v-if="refreshingTokens.includes(token.email)" class="flex items-center space-x-2">
                     <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -205,7 +203,7 @@
                   <span v-else>{{ t('dash.refreshToken') }}</span>
                 </button>
                 <button @click="deleteToken(token.email)"
-                        class="w-full group-hover:bg-red-50 text-red-600 py-2 rounded-lg transition-all duration-300 hover:bg-red-100">
+                        class="token-action token-action--danger">
                   {{ t('dash.deleteAccount') }}
                 </button>
               </div>
@@ -217,18 +215,18 @@
 
     <!-- 删除全部确认对话框 -->
     <div v-if="showDeleteAllConfirm"
-         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm"
          @click.self="showDeleteAllConfirm = false">
-      <div class="relative bg-white/90 backdrop-blur-lg rounded-2xl p-6 w-11/12 max-w-md transform transition-all duration-300 scale-100 opacity-100">
-        <h2 class="text-2xl font-bold text-red-600 mb-4">{{ t('dash.dangerTitle') }}</h2>
-        <p class="text-gray-700 mb-6">{{ t('dash.dangerText', { n: totalItems }) }}</p>
+      <div class="relative w-11/12 max-w-md rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_30px_60px_rgba(40,79,123,0.16)] transform transition-all duration-300 scale-100 opacity-100">
+        <h2 class="mb-4 text-2xl font-bold text-rose-700">{{ t('dash.dangerTitle') }}</h2>
+        <p class="mb-6 text-slate-600">{{ t('dash.dangerText', { n: totalItems }) }}</p>
         <div class="flex justify-end space-x-4">
           <button @click="showDeleteAllConfirm = false"
-                  class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all duration-300">
+                  class="rounded-xl bg-slate-100 px-4 py-2 transition-all duration-300 hover:bg-slate-200">
             {{ t('dash.cancel') }}
           </button>
           <button @click="deleteAllAccounts"
-                  class="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all duration-300">
+                  class="rounded-xl bg-rose-600 px-4 py-2 text-white transition-all duration-300 hover:bg-rose-700">
             {{ t('dash.confirmDelete') }}
           </button>
         </div>
@@ -237,54 +235,54 @@
 
     <!-- 添加账号模态框 -->
     <div v-if="showAddModal"
-         class="fixed inset-0 z-50 overflow-y-auto bg-black/60 px-4 py-6 backdrop-blur-sm"
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/30 px-4 py-6 backdrop-blur-sm"
           @click.self="closeAddModal">
       <div :class="[
-            'relative mx-auto flex max-h-[calc(100vh-3rem)] w-full flex-col overflow-hidden rounded-2xl bg-white/80 p-6 backdrop-blur-lg transform transition-all duration-300 scale-100 opacity-100',
+            'relative mx-auto flex max-h-[calc(100vh-3rem)] w-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_30px_60px_rgba(40,79,123,0.16)] transform transition-all duration-300 scale-100 opacity-100',
             addMode === 'batch' ? 'max-w-3xl' : 'max-w-md'
           ]">
-        <div class="mb-6 flex shrink-0 border-b border-gray-200">
-          <button :class="['flex-1 py-2 font-bold transition-all rounded-t-xl duration-300', addMode==='single' ? 'text-gray-600 border-b-2 border-gray-500 bg-gray-50/60' : 'text-gray-500 bg-transparent', isBatchAdding ? 'opacity-50 cursor-not-allowed' : '']" @click="!isBatchAdding && (addMode='single')">{{ t('dash.singleAdd') }}</button>
-          <button :class="['flex-1 py-2 font-bold transition-all rounded-t-xl duration-300', addMode==='batch' ? 'text-gray-600 border-b-2 border-gray-500 bg-gray-50/60' : 'text-gray-500 bg-transparent', isBatchAdding ? 'opacity-50 cursor-not-allowed' : '']" @click="!isBatchAdding && (addMode='batch')">{{ t('dash.batchAdd') }}</button>
+        <div class="mb-6 flex shrink-0 border-b border-slate-200">
+          <button :class="['flex-1 rounded-t-xl py-2 font-bold transition-all duration-300', addMode==='single' ? 'border-b-2 border-sky-600 bg-sky-50 text-sky-700' : 'bg-transparent text-slate-500', isBatchAdding ? 'cursor-not-allowed opacity-50' : '']" @click="!isBatchAdding && (addMode='single')">{{ t('dash.singleAdd') }}</button>
+          <button :class="['flex-1 rounded-t-xl py-2 font-bold transition-all duration-300', addMode==='batch' ? 'border-b-2 border-sky-600 bg-sky-50 text-sky-700' : 'bg-transparent text-slate-500', isBatchAdding ? 'cursor-not-allowed opacity-50' : '']" @click="!isBatchAdding && (addMode='batch')">{{ t('dash.batchAdd') }}</button>
         </div>
         <div class="modal-scroll min-h-0 flex-1 overflow-y-auto pr-2">
         <transition name="fade" mode="out-in">
           <div v-if="addMode==='single'" key="single" class="pr-1">
-            <h2 class="text-xl font-bold mb-4">{{ t('dash.addTitle') }}</h2>
+            <h2 class="mb-4 text-xl font-bold text-slate-800">{{ t('dash.addTitle') }}</h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <label class="block text-sm font-medium text-slate-700">Email</label>
                 <input v-model="newAccount.email" type="email"
-                       class="mt-1 block w-full rounded-xl border-gray-300 bg-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 h-12 text-base px-4">
+                       class="form-input mt-1 block h-12 w-full rounded-xl px-4 text-base">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <label class="block text-sm font-medium text-slate-700">Password</label>
                 <input v-model="newAccount.password" type="password"
-                       class="mt-1 block w-full rounded-xl border-gray-300 bg-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 h-12 text-base px-4">
+                       class="form-input mt-1 block h-12 w-full rounded-xl px-4 text-base">
               </div>
               <div class="flex justify-end space-x-4 pt-4">
                 <button @click="closeAddModal"
-                        class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all duration-300">
+                        class="rounded-xl bg-slate-100 px-4 py-2 transition-all duration-300 hover:bg-slate-200">
                   {{ t('dash.cancel') }}
                 </button>
                 <button @click="addToken"
-                        class="px-4 py-2 rounded-xl bg-black text-white hover:bg-white hover:text-black transition-all duration-300">
+                        class="primary-submit rounded-xl px-4 py-2 text-white transition-all duration-300">
                   {{ t('dash.add') }}
                 </button>
               </div>
             </div>
           </div>
           <div v-else key="batch" class="pr-1">
-            <h2 class="text-xl font-bold mb-4 px-4">{{ t('dash.batchTitle') }}</h2>
+            <h2 class="mb-4 px-4 text-xl font-bold text-slate-800">{{ t('dash.batchTitle') }}</h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 px-4 pb-2">{{ t('dash.batchLabel') }}</label>
+                <label class="block px-4 pb-2 text-sm font-medium text-slate-700">{{ t('dash.batchLabel') }}</label>
                 <textarea v-model="batchAccounts"
                           :disabled="isBatchAdding"
                           rows="6"
-                          class="mt-1 block w-full rounded-xl border-gray-300 bg-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 h-36 text-base px-4 py-3 resize-none disabled:opacity-70"></textarea>
+                          class="form-input mt-1 block h-36 w-full resize-none px-4 py-3 text-base disabled:opacity-70"></textarea>
               </div>
-              <div v-if="batchTask" class="mx-4 rounded-2xl border border-slate-200 bg-white/70 p-5 shadow-sm">
+              <div v-if="batchTask" class="mx-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm">
                 <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div class="text-sm text-slate-500">{{ t('dash.taskStatus') }}</div>
@@ -359,12 +357,12 @@
               </div>
               <div class="flex justify-end space-x-4 pt-4">
                 <button @click="closeAddModal"
-                        class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all duration-300 disabled:opacity-50">
+                        class="rounded-xl bg-slate-100 px-4 py-2 transition-all duration-300 disabled:opacity-50 hover:bg-slate-200">
                   {{ isBatchAdding ? t('dash.continueBackground') : t('dash.close') }}
                 </button>
                 <button @click="addBatchTokens"
                         :disabled="isBatchAdding"
-                        class="px-4 py-2 rounded-xl bg-black text-white hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50">
+                        class="primary-submit rounded-xl px-4 py-2 text-white transition-all duration-300 disabled:opacity-50">
                   {{ isBatchAdding ? t('dash.batchRunning') : t('dash.batchStart') }}
                 </button>
               </div>
@@ -378,9 +376,9 @@
     <!-- Toast 通知 -->
     <div v-if="toast.show"
          :class="[
-           'fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-300 max-w-md',
-           toast.type === 'success' ? 'bg-emerald-500 text-white' :
-           toast.type === 'warning' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
+           'fixed right-4 top-4 z-50 max-w-md rounded-2xl border px-6 py-4 shadow-lg transform transition-all duration-300',
+           toast.type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :
+           toast.type === 'warning' ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-rose-200 bg-rose-50 text-rose-800'
          ]">
       <div class="flex items-center space-x-2">
         <svg v-if="toast.type === 'success'" class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -879,20 +877,29 @@ onBeforeUnmount(() => {
 
 <style lang="css" scoped>
 @media (max-width: 640px) {
-  .container {
-    padding: 0;
+  .dashboard-scroll {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
+}
+
+.dashboard-hero,
+.info-strip {
+  border: 1px solid rgba(214, 228, 243, 0.92);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 250, 255, 0.88));
+  box-shadow: 0 18px 40px rgba(39, 84, 132, 0.08);
+  border-radius: 28px;
 }
 
 .dashboard-scroll {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.38) rgba(255, 255, 255, 0.08);
+  scrollbar-color: rgba(124, 159, 197, 0.9) rgba(222, 235, 248, 0.9);
 }
 
 .modal-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.32) rgba(255, 255, 255, 0.06);
+  scrollbar-color: rgba(124, 159, 197, 0.75) rgba(233, 241, 250, 0.9);
 }
 
 .dashboard-scroll::-webkit-scrollbar {
@@ -904,42 +911,39 @@ onBeforeUnmount(() => {
 }
 
 .dashboard-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(226, 237, 248, 0.95);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(199, 217, 236, 0.9);
 }
 
 .modal-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(235, 242, 250, 0.95);
   border-radius: 999px;
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(180deg, rgba(133, 170, 210, 0.95), rgba(105, 146, 190, 0.95));
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 2px 10px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(95, 137, 183, 0.78);
   background-clip: padding-box;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.18));
+  background: linear-gradient(180deg, rgba(150, 183, 220, 0.9), rgba(123, 159, 198, 0.9));
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(118, 154, 194, 0.7);
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.28));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 4px 14px rgba(15, 23, 42, 0.16);
+  background: linear-gradient(180deg, rgba(112, 156, 202, 1), rgba(84, 129, 178, 1));
 }
 
 .modal-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.24));
+  background: linear-gradient(180deg, rgba(129, 168, 210, 1), rgba(103, 145, 190, 1));
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.34));
+  background: linear-gradient(180deg, rgba(96, 142, 190, 1), rgba(74, 120, 171, 1));
 }
 
 .dashboard-scroll::-webkit-scrollbar-corner {
@@ -959,14 +963,17 @@ onBeforeUnmount(() => {
 }
 
 .token-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(245, 249, 254, 0.95));
+  border: 1px solid rgba(214, 228, 243, 0.9);
+  box-shadow: 0 16px 30px rgba(38, 83, 130, 0.08);
   transform: translateY(0);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .token-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 36px rgba(38, 83, 130, 0.12);
+  border-color: rgba(162, 196, 231, 0.9);
 }
 
 .scrollbar-hide {
@@ -1010,7 +1017,7 @@ onBeforeUnmount(() => {
   top: 0;
   bottom: 0;
   width: 24px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8));
+  background: linear-gradient(to right, transparent, rgba(244, 248, 253, 0.95));
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s;
@@ -1062,7 +1069,7 @@ onBeforeUnmount(() => {
   left: 0;
   width: 0;
   height: 100%;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(71, 134, 204, 0.1);
   transition: width 0.3s ease;
 }
 
@@ -1094,91 +1101,154 @@ onBeforeUnmount(() => {
 
 @keyframes selected-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 0 0 rgba(76, 143, 216, 0.35);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 6px rgba(76, 143, 216, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 0 rgba(76, 143, 216, 0);
   }
 }
 
-/* 马卡龙紫色刷新按钮动画 */
-@keyframes refresh-pulse-purple {
+.field-row {
+  background: linear-gradient(180deg, rgba(240, 247, 255, 0.95), rgba(233, 242, 252, 0.95));
+  border: 1px solid rgba(214, 228, 243, 0.9);
+}
+
+.field-label {
+  min-width: 96px;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #54708d;
+}
+
+.field-value {
+  color: #16385d;
+  font-weight: 600;
+}
+
+.copy-button {
+  opacity: 0;
+  color: #235f9f;
+  background: rgba(214, 232, 251, 0.95);
+  border: 1px solid rgba(173, 203, 236, 0.9);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.group:hover .copy-button {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  background: rgba(197, 221, 247, 0.98);
+}
+
+.toolbar-btn,
+.token-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.toolbar-btn:hover,
+.token-action:hover {
+  transform: translateY(-1px);
+}
+
+.toolbar-btn--primary,
+.primary-submit,
+.token-action--primary {
+  background: linear-gradient(135deg, #3d86d3, #2c6fb7);
+  border-color: rgba(41, 102, 167, 0.92);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(45, 104, 171, 0.18);
+}
+
+.toolbar-btn--primary:hover,
+.primary-submit:hover,
+.token-action--primary:hover {
+  background: linear-gradient(135deg, #327bc8, #235f9f);
+}
+
+.toolbar-btn--accent {
+  background: linear-gradient(180deg, rgba(235, 244, 255, 0.98), rgba(219, 234, 251, 0.98));
+  border-color: rgba(163, 196, 231, 0.92);
+  color: #1f5d9e;
+  box-shadow: 0 10px 22px rgba(73, 121, 175, 0.12);
+}
+
+.toolbar-btn--neutral,
+.toolbar-btn--ghost {
+  background: rgba(247, 250, 255, 0.95);
+  border-color: rgba(203, 220, 238, 0.92);
+  color: #35597d;
+}
+
+.toolbar-btn--warning {
+  background: linear-gradient(180deg, rgba(255, 244, 223, 0.98), rgba(255, 238, 204, 0.98));
+  border-color: rgba(240, 206, 145, 0.95);
+  color: #8d5a13;
+}
+
+.toolbar-btn--busy {
+  background: linear-gradient(135deg, #5f96d0, #3d79bb);
+  border-color: rgba(51, 110, 178, 0.95);
+  color: #ffffff;
+}
+
+.token-action {
+  width: 100%;
+}
+
+.token-action--danger {
+  background: rgba(252, 232, 232, 0.92);
+  border-color: rgba(239, 196, 196, 0.95);
+  color: #b43b3b;
+}
+
+.token-action--danger:hover {
+  background: rgba(249, 220, 220, 0.96);
+}
+
+.form-input {
+  border: 1px solid rgba(214, 228, 243, 0.95);
+  background: rgba(248, 251, 255, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #67a5e4;
+  box-shadow: 0 0 0 4px rgba(103, 165, 228, 0.18);
+  background: #ffffff;
+}
+
+@keyframes refresh-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 0 0 rgba(92, 149, 210, 0.32);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(168, 85, 247, 0);
+    box-shadow: 0 0 0 6px rgba(92, 149, 210, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+    box-shadow: 0 0 0 0 rgba(92, 149, 210, 0);
   }
 }
 
-/* 马卡龙绿色刷新按钮动画 */
-@keyframes refresh-pulse-green {
-  0% {
-    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
-  }
-}
-
-/* 马卡龙粉色刷新按钮动画 */
-@keyframes refresh-pulse-pink {
-  0% {
-    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(236, 72, 153, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
-  }
-}
-
-.action-button:hover {
-  animation: refresh-pulse-purple 1.5s infinite;
-}
-
-/* 刷新中的按钮样式 - 马卡龙紫色 */
-.refreshing-button-purple {
-  background: linear-gradient(45deg, #c084fc, #a855f7);
-  color: white;
-  animation: refresh-pulse-purple 1.5s infinite;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
-}
-
-/* 刷新中的按钮样式 - 马卡龙绿色 */
-.refreshing-button-green {
-  background: linear-gradient(45deg, #86efac, #4ade80);
-  color: white;
-  animation: refresh-pulse-green 1.5s infinite;
-  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-}
-
-/* 刷新中的按钮样式 - 马卡龙粉色 */
-.refreshing-button-pink {
-  background: linear-gradient(45deg, #f472b6, #ec4899);
-  color: white;
-  animation: refresh-pulse-pink 1.5s infinite;
-  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-}
-
-/* 马卡龙色系按钮增强效果 */
-.action-button {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.action-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+.toolbar-btn--busy,
+.token-action--primary.toolbar-btn--busy {
+  animation: refresh-pulse 1.6s infinite;
 }
 </style>

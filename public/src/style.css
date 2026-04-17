@@ -1,3 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg-base: #eef5ff;
+  --bg-accent: #d9eafe;
+  --bg-muted: #f8fbff;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-strong: #ffffff;
+  --surface-soft: #f4f8fd;
+  --border: #d6e4f3;
+  --border-strong: #bdd2ea;
+  --text-primary: #12304f;
+  --text-secondary: #5d7692;
+  --text-muted: #7d93ac;
+  --primary: #2d6fb7;
+  --primary-strong: #195da8;
+  --primary-soft: #e1efff;
+  --success-soft: #e7f5ee;
+  --success-text: #196047;
+  --warning-soft: #fff4df;
+  --warning-text: #915d12;
+  --danger-soft: #fce8e8;
+  --danger-text: #b43b3b;
+  --shadow-soft: 0 18px 48px rgba(43, 87, 140, 0.08);
+  --shadow-card: 0 12px 30px rgba(36, 78, 126, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at top left, rgba(137, 188, 255, 0.34), transparent 28%),
+    radial-gradient(circle at top right, rgba(185, 221, 255, 0.5), transparent 32%),
+    linear-gradient(180deg, #f7fbff 0%, #edf5ff 48%, #e6f0fb 100%);
+  background-attachment: fixed;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
